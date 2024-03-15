@@ -1,7 +1,7 @@
 import Logger from "../Logger";
 import { PAGE_WAXWALLET_STACK, TIME_15_MINITE, TIME_5_MINITE, TIME_DAY, TIME_MINITE, URL_WAX_WALLET_STAKING, WAX_API_GET_ACCOUNT, WAX_API_PUSH_TRANSACTION } from "../utils/constant";
 import BaseTask, { NextActionType, TaskState } from "./BaseTask";
-import { sleep } from 'sleep'
+import { sleep } from '../utils/utils'
 import { getAwakeTime, random } from "../utils/utils";
 import { DATA_KEY_ACCOUNT_INFO, DATA_KEY_MINING, IAccountInfo, IMiningData } from "../types";
 import { HTTPResponse, Page, PageEmittedEvents } from "puppeteer";
@@ -118,7 +118,7 @@ export default class ClaimStakeRewards extends BaseTask<IStackRewardsResult> {
 
     page.on('response', this.updateMiningData)
     page.on('response', this.updateTransaction)
-    sleep(2)
+    await sleep(2)
     logger.debug('goto', URL_WAX_WALLET_STAKING)
     page.goto(URL_WAX_WALLET_STAKING)
       .then((info) => {

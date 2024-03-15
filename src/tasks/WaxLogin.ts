@@ -1,4 +1,4 @@
-import { sleep } from "sleep"
+import { sleep } from '../utils/utils'
 import Logger from "../Logger"
 import BaseTask, { TaskState } from "./BaseTask"
 import { PAGE_WAX_WALLET_TESTER, PAGE_WAXWALLET as PAGE_WAX_WALLET, WAX_API_SESSION, URL_WAX_WALLET, URL_WAX_WALLET_LOGIN } from "../utils/constant"
@@ -57,7 +57,7 @@ export class WaxLogin extends BaseTask<IWaxLoginResult> {
 
       } else if (url === URL_WAX_WALLET) {
         // Delay 3 seconds for page update
-        sleep(3)
+        await sleep(3)
         unregisterEvents()
         this.nextStep(STEP_SAVE_COOKIE)
       }
@@ -82,7 +82,7 @@ export class WaxLogin extends BaseTask<IWaxLoginResult> {
       const cookie = this.provider.getData<CookieObject[]>(DATA_KEY_COOKIE)
       if (cookie && cookie.length) {
         await page.setCookie(...cookie)
-        sleep(1)
+        await sleep(1)
       }
     }
 
@@ -105,7 +105,7 @@ export class WaxLogin extends BaseTask<IWaxLoginResult> {
       if (respUrl.indexOf(WAX_API_SESSION) > -1) {
         if (resp.ok()) {
           // Login success
-          sleep(3)
+          await sleep(3)
           unregisterEvents()
           this.nextStep(STEP_SAVE_COOKIE)
 
@@ -159,13 +159,13 @@ export class WaxLogin extends BaseTask<IWaxLoginResult> {
       logger.log(`Login with ${username}`)
     }
     await page.waitForSelector(SEL_IPT_USERNAME)
-    sleep(1)
+    await sleep(1)
     if (username) {
       await page.type(SEL_IPT_USERNAME, username, {
         delay: 160,
       });
     }
-    sleep(1)
+    await sleep(1)
     if (password) {
       await page.type(SEL_IPT_PASSWORD, password, {
         delay: 180,
@@ -173,7 +173,7 @@ export class WaxLogin extends BaseTask<IWaxLoginResult> {
     }
 
     if (username && password) {
-      sleep(1)
+      await sleep(1)
       await page.click(btn_submit)
     } else {
       logger.log('Username and password were required!')

@@ -22,7 +22,7 @@ import moment from 'moment';
 import { responseGuard, safeGetJson, sureClick } from '../utils/pputils';
 import { UTCtoGMT } from '../utils/datetime';
 import config from '../config';
-import { sleep } from 'sleep';
+import { sleep } from '../utils/utils'
 
 const CLS_BTN_START = '.css-rrm59m';
 const TXT_BTN_START = 'Start Now';
@@ -433,7 +433,7 @@ export default class Mining extends BaseTask<IMiningResult> {
               await btn.click();
               return NextActionType.Continue;
             }
-            sleep(15);
+            await sleep(15);
             count--;
           }
         }
@@ -442,13 +442,14 @@ export default class Mining extends BaseTask<IMiningResult> {
       return NextActionType.Stop;
     };
 
-    sleep(3);
-    this.waitFor(
-      'Prepare for mine',
-      waitReadyEvent,
-      3 * TIME_MINITE,
-      waitTimeout,
-    );
+    sleep(3, () => {
+      this.waitFor(
+        'Prepare for mine',
+        waitReadyEvent,
+        3 * TIME_MINITE,
+        waitTimeout,
+      );
+    });
   };
 
   private async stepPrepare() {
@@ -474,7 +475,7 @@ export default class Mining extends BaseTask<IMiningResult> {
         }
       } catch (err) {}
 
-      sleep(5)
+      await sleep(5)
       await clickStart();
     };
 
@@ -528,7 +529,7 @@ export default class Mining extends BaseTask<IMiningResult> {
     const clickMine = async (): Promise<NextActionType> => {
       const clicked = sureClick(page, CLS_BTN_MINE, TXT_BTN_MINE);
       if (clicked) {
-        sleep(2);
+        await sleep(2);
         this.nextStep(STEP_CLAIM);
         return NextActionType.Stop;
       } else {

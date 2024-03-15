@@ -13,3 +13,16 @@ export const getAwakeTime = (delay: number, rnd = 180000): number => {
   rnd = rnd < 180000 ? 180000 : rnd
   return (new Date().getTime() + delay + random(rnd, rnd / 4))
 }
+
+
+export function sleep(second: number): void;
+export function sleep(second: number, callback: () => void): Promise<void>
+export function sleep(second: number, callback?: () => void) {
+  if (!callback) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, second * 1000)
+    })
+  } else {
+    return setTimeout(callback, second * 1000)
+  }
+}

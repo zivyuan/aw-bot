@@ -8,7 +8,7 @@ import { UTCtoGMT } from "../utils/datetime";
 import { responseGuard, safeGetJson } from "../utils/pputils";
 import { getAwakeTime, random } from "../utils/utils";
 import BaseTask, { NextActionType, TaskState } from "./BaseTask"
-import { sleep } from 'sleep'
+import { sleep } from '../utils/utils'
 import config from "../config";
 
 export interface IReportResult {
@@ -117,7 +117,7 @@ export default class Report extends BaseTask<IReportResult> {
     if (this._day !== 0) {
       const delay = random(config.report.cloudFlareMax, config.report.cloudFlareMin)
       logger.debug(`Delay ${delay} seconds for next day...`)
-      sleep(delay)
+      await sleep(delay)
     }
 
     const date = moment(new Date(this._today - this._day * TIME_DAY)).format('YYYY-MM-DD')
@@ -137,17 +137,18 @@ export default class Report extends BaseTask<IReportResult> {
     page.goto(urllibs[Math.floor(Math.random() * 4)])
       .catch(() => { })
       .finally(() => {
-        sleep(5)
-        page.goto(url)
-          .catch(() => {
-            // Task delay
-            // page.off(PageEmittedEvents.Response, this.updateHistory)
-            // logger.log('Mine log query failed. Retry after 5 minutes.')
-            // logger.debug('Page open error:', err)
-            // logger.debug(this._history)
-            // const akt = getAwakeTime(TIME_10_MINITE)
-            // this.complete(TaskState.Canceled, 'Log query failed.', null, akt)
-          })
+        sleep(5, () => {
+          page.goto(url)
+            .catch(() => {
+              // Task delay
+              // page.off(PageEmittedEvents.Response, this.updateHistory)
+              // logger.log('Mine log query failed. Retry after 5 minutes.')
+              // logger.debug('Page open error:', err)
+              // logger.debug(this._history)
+              // const akt = getAwakeTime(TIME_10_MINITE)
+              // this.complete(TaskState.Canceled, 'Log query failed.', null, akt)
+            })
+        })
       })
     this._day++
   }

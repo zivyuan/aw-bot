@@ -2,7 +2,7 @@
 import { Page } from "puppeteer"
 import config from "../config"
 import Logger from "../Logger"
-import { sleep } from 'sleep'
+import { sleep } from '../utils/utils'
 import { Browser } from "puppeteer"
 import { IMiningDataProvider } from "../Minion"
 import { getAwakeTime } from "../utils/utils"
@@ -157,7 +157,10 @@ export default class BaseTask<T> implements ITask<T> {
 
   protected nextStep(name: string, delay?: number) {
     if (delay) {
-      sleep(delay)
+      sleep(delay, () => {
+        this.nextStep(name)
+      })
+      return
     }
 
     const step = this._steps[name]
